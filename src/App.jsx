@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 
@@ -23,7 +23,6 @@ const LoadingScreen = () => (
 
 function App() {
   return (
-    <Router>
       <div className="min-h-screen flex flex-col bg-gradient-to-br from-pink-50 via-rose-50 to-pink-100">
         <Navbar />
         <main className="flex-1 pt-20">
@@ -41,7 +40,6 @@ function App() {
         </main>
         <Footer />
       </div>
-    </Router>
   );
 }
 
