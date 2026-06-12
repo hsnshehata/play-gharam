@@ -7,7 +7,7 @@ const Home = lazy(() => import('./pages/Home'));
 const Quiz = lazy(() => import('./pages/Quiz'));
 const Memory = lazy(() => import('./pages/MemoryGame'));
 const ColorMatch = lazy(() => import('./pages/ColorMatch'));
-const Wedding = lazy(() => import('./pages/WeddingDressUp'));
+const Wedding = lazy(() => import('./pages/WeddingCountdown'));
 const Magazine = lazy(() => import('./pages/Magazine'));
 const Login = lazy(() => import('./pages/Login'));
 
