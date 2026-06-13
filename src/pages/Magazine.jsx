@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 /* ==============================================================
    MOCK DATA – 8 realistic beauty articles in Arabic
@@ -277,10 +278,14 @@ const styles = {
 /* ==============================================================
    MagazineCard Component
    ============================================================== */
-const MagazineCard = ({ article, style }) => (
-  <div style={{ ...styles.card, ...style }}>
+const MagazineCard = ({ article, style, navigate }) => (
+  <div
+    style={{ ...styles.card, ...style, cursor: 'pointer' }}
+    onClick={() => navigate(`/magazine/${article.id}`)}
+    className="magazine-card"
+  >
     <div style={styles.cardImage(article.gradient, article.emoji)}>
-      <span style={{ filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.15))' }}>
+      <span style={{ filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.15))' }} className="card-image-emoji">
         {article.emoji}
       </span>
       <span style={styles.cardBadge}>{article.category}</span>
@@ -291,16 +296,9 @@ const MagazineCard = ({ article, style }) => (
     </div>
     <div style={styles.cardFooter}>
       <span style={styles.date}>{article.date}</span>
-      <a
-        href="#"
-        style={styles.readMore}
-        onClick={(e) => {
-          e.preventDefault();
-          alert(`📖 ${article.title} - قريباً المحتوى الكامل`);
-        }}
-      >
+      <span style={styles.readMore}>
         اقرأي المزيد ←
-      </a>
+      </span>
     </div>
   </div>
 );
@@ -313,6 +311,7 @@ const Magazine = () => {
   const [loading, setLoading] = useState(false);
   const [filtered, setFiltered] = useState(mockArticles);
   const gridRef = useRef(null);
+  const navigate = useNavigate();
 
   // Filter animation on category change
   useEffect(() => {
@@ -463,7 +462,7 @@ const Magazine = () => {
                   animationDelay: `${idx * 0.08}s`,
                 }}
               >
-                <MagazineCard article={article} />
+                <MagazineCard article={article} navigate={navigate} />
               </div>
             ))}
           </div>

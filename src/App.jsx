@@ -9,6 +9,7 @@ const Memory = lazy(() => import('./pages/MemoryGame'));
 const ColorMatch = lazy(() => import('./pages/ColorMatch'));
 const Wedding = lazy(() => import('./pages/WeddingCountdown'));
 const Magazine = lazy(() => import('./pages/Magazine'));
+const ArticleDetail = lazy(() => import('./pages/ArticleDetail'));
 const Login = lazy(() => import('./pages/Login'));
 
 // Loading fallback
@@ -34,6 +35,7 @@ function App() {
               <Route path="/color-match" element={<ColorMatch />} />
               <Route path="/wedding" element={<Wedding />} />
               <Route path="/magazine" element={<Magazine />} />
+              <Route path="/magazine/:id" element={<ArticleDetail />} />
               <Route path="/login" element={<Login />} />
             </Routes>
           </Suspense>
