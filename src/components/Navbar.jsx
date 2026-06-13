@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 
 const navLinks = [
   { to: '/', label: 'الرئيسية' },
-  { to: '/quiz', label: 'الألعاب' },
+  { to: '/', label: 'الألعاب' },
   { to: '/magazine', label: 'المجلة' },
   { to: '/login', label: 'تسجيل الدخول' },
 ];
@@ -25,6 +25,16 @@ function Navbar() {
   useEffect(() => {
     setIsOpen(false);
   }, [location.pathname]);
+
+  const isActiveCheck = (link) => {
+    if (link.label === 'الرئيسية') {
+      return location.pathname === '/';
+    }
+    if (link.label === 'الألعاب') {
+      return ['/', '/quiz', '/memory', '/color-match', '/wedding'].includes(location.pathname);
+    }
+    return location.pathname === link.to;
+  };
 
   return (
     <nav
@@ -50,11 +60,10 @@ function Navbar() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => {
-              const isActive = location.pathname === link.to || 
-                (link.to === '/quiz' && ['/quiz', '/memory', '/color-match', '/wedding'].includes(location.pathname));
+              const isActive = isActiveCheck(link);
               return (
                 <Link
-                  key={link.to}
+                  key={link.label}
                   to={link.to}
                   className={`relative px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
                     isActive
@@ -107,11 +116,10 @@ function Navbar() {
         <div className="bg-white/95 backdrop-blur-xl border-t border-pink-100 shadow-xl rounded-b-2xl mx-2 mb-2">
           <div className="px-4 py-3 space-y-1">
             {navLinks.map((link) => {
-              const isActive = location.pathname === link.to ||
-                (link.to === '/quiz' && ['/quiz', '/memory', '/color-match', '/wedding'].includes(location.pathname));
+              const isActive = isActiveCheck(link);
               return (
                 <Link
-                  key={link.to}
+                  key={link.label}
                   to={link.to}
                   className={`block px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                     isActive

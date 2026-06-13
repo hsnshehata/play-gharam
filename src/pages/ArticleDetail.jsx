@@ -85,6 +85,16 @@ export default function ArticleDetail() {
       {/* Article content */}
       <div className="max-w-3xl mx-auto px-6 -mt-12 relative z-20">
         <div className="bg-white rounded-2xl shadow-xl p-6 md:p-10 mb-8">
+          {/* Article image */}
+          {article.image && (
+            <div className="mb-8 -mx-6 md:-mx-10 -mt-6 md:-mt-10 overflow-hidden rounded-t-2xl">
+              <img
+                src={article.image}
+                alt={article.title}
+                className="w-full max-h-96 object-cover rounded-xl"
+              />
+            </div>
+          )}
           {paragraphs.map((para, idx) => (
             <p
               key={idx}
