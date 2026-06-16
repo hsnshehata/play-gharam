@@ -1,85 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-/* ==============================================================
-   MOCK DATA – 8 realistic beauty articles in Arabic
-   ============================================================== */
-const mockArticles = [
-  {
-    id: 1,
-    category: 'ميك أب',
-    title: 'أحدث صيحات ميك أب الزفاف في 2026',
-    description: 'اكتشفي أحدث صيحات المكياج للعروس في عام 2026، من الألوان الترابية الناعمة إلى اللمسات الجلامورية الجريئة.',
-    date: '١٢ يونيو ٢٠٢٦',
-    emoji: '💄',
-    gradient: 'linear-gradient(135deg, #f093fb, #f5576c)',
-  },
-  {
-    id: 2,
-    category: 'بشرة',
-    title: 'خطوات العناية بالبشرة قبل الزفاف',
-    description: 'روتين شامل للعناية بالبشرة قبل الزفاف يشمل التقشير والترطيب والتغذية للحصول على بشرة نضرة ومشرقة.',
-    date: '١٠ يونيو ٢٠٢٦',
-    emoji: '✨',
-    gradient: 'linear-gradient(135deg, #4facfe, #00f2fe)',
-  },
-  {
-    id: 3,
-    category: 'ميك أب',
-    title: 'ألوان الروج الرائجة هذا الموسم',
-    description: 'تعرفي على ألوان أحمر الشفاه الأكثر رواجاً هذا الموسم، من درجات النبيذ الغامقة إلى النيود الطبيعية.',
-    date: '٨ يونيو ٢٠٢٦',
-    emoji: '💋',
-    gradient: 'linear-gradient(135deg, #fa709a, #fee140)',
-  },
-  {
-    id: 4,
-    category: 'شعر',
-    title: 'فرد الشعر بالبروتين: كل ما تحتاجين معرفته',
-    description: 'دليل شامل عن فرد الشعر بالبروتين، فوائده، أضراره، وطريقة العناية بالشعر بعد العلاج.',
-    date: '٥ يونيو ٢٠٢٦',
-    emoji: '🌸',
-    gradient: 'linear-gradient(135deg, #a18cd1, #fbc2eb)',
-  },
-  {
-    id: 5,
-    category: 'شعر',
-    title: 'نصائح للعناية بالشعر المصبوغ',
-    description: 'أهم النصائح للحفاظ على لون الشعر المصبوغ أطول فترة ممكنة وتجنب الجفاف والتقصف.',
-    date: '٣ يونيو ٢٠٢٦',
-    emoji: '🎀',
-    gradient: 'linear-gradient(135deg, #fccb90, #d57eeb)',
-  },
-  {
-    id: 6,
-    category: 'عرايس',
-    title: 'أحدث تسريحات الزفاف',
-    description: 'تشكيلة مميزة من أحدث تسريحات الزفاف التي تناسب كل أنماط العرائس، من الكلاسيك إلى العصري.',
-    date: '١ يونيو ٢٠٢٦',
-    emoji: '👑',
-    gradient: 'linear-gradient(135deg, #f6d365, #fda085)',
-  },
-  {
-    id: 7,
-    category: 'بشرة',
-    title: 'العناية بالبشرة في فصل الصيف',
-    description: 'نصائح ذهبية للعناية ببشرتك في الصيف، من واقي الشمس المناسب إلى الترطيب الخفيف.',
-    date: '٢٨ مايو ٢٠٢٦',
-    emoji: '☀️',
-    gradient: 'linear-gradient(135deg, #fddb92, #d1fdff)',
-  },
-  {
-    id: 8,
-    category: 'بشرة',
-    title: 'ماسكات طبيعية لنضارة البشرة',
-    description: 'أفضل الماسكات الطبيعية بمكونات من مطبخك لتعزيز نضارة بشرتك وإشراقتها.',
-    date: '٢٥ مايو ٢٠٢٦',
-    emoji: '🧴',
-    gradient: 'linear-gradient(135deg, #89f7fe, #66a6ff)',
-  },
-];
+import articles from '../data/articles';
 
-const categories = ['الكل', 'ميك أب', 'شعر', 'بشرة', 'عرايس'];
+const categories = ['الكل', 'ميك أب', 'شعر', 'بشرة', 'عرايس', 'عناية', 'أظافر', 'صحة', 'موضة', 'عطور'];
 
 /* ==============================================================
    STYLES (inline + keyframes in a style tag)
@@ -127,6 +51,7 @@ const styles = {
     gap: '10px',
     padding: '16px 20px',
     flexWrap: 'wrap',
+    overflowX: 'auto',
     background: '#fff',
     borderBottom: '1px solid #f3e8f0',
     position: 'sticky',
@@ -167,7 +92,7 @@ const styles = {
     cursor: 'pointer',
     animation: 'fadeInUp 0.5s ease',
   },
-  cardImage: (gradient, emoji) => ({
+  cardImage: (gradient, emoji, image) => ({
     height: '180px',
     background: gradient,
     display: 'flex',
@@ -177,6 +102,14 @@ const styles = {
     position: 'relative',
     overflow: 'hidden',
   }),
+  cardImageImg: {
+    position: 'absolute',
+    inset: 0,
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    opacity: 0.55,
+  },
   cardBadge: {
     position: 'absolute',
     top: '12px',
@@ -278,14 +211,63 @@ const styles = {
 /* ==============================================================
    MagazineCard Component
    ============================================================== */
-const MagazineCard = ({ article, style, navigate }) => (
+const MagazineCard = ({ article, style, navigate }) => {
+  // Build gradient CSS from Tailwind classes
+  const gradientMap = {
+    'from-pink-400': '#f472b6', 'via-rose-500': '#f43f5e', 'to-fuchsia-600': '#d946ef',
+    'from-emerald-300': '#6ee7b7', 'via-teal-400': '#2dd4bf', 'to-cyan-500': '#06b6d4',
+    'from-red-400': '#f87171', 'to-pink-600': '#db2777',
+    'from-violet-300': '#c4b5fd', 'via-purple-400': '#c084fc', 'to-fuchsia-500': '#d946ef',
+    'from-indigo-400': '#818cf8', 'via-purple-500': '#a855f7', 'to-violet-600': '#7c3aed',
+    'from-amber-400': '#fbbf24', 'via-orange-500': '#f97316', 'to-red-600': '#dc2626',
+    'from-rose-300': '#fda4af', 'via-pink-400': '#f472b6',
+    'from-gray-800': '#1f2937', 'via-gray-700': '#374151', 'to-gray-900': '#111827',
+    'from-purple-300': '#d8b4fe', 'via-violet-400': '#a78bfa', 'to-indigo-500': '#6366f1',
+    'from-yellow-200': '#fef08a', 'via-amber-300': '#fcd34d', 'to-orange-400': '#fb923c',
+    'from-cyan-300': '#67e8f9', 'via-blue-400': '#60a5fa',
+    'from-pink-300': '#f9a8d4', 'via-fuchsia-400': '#e879f9', 'to-purple-500': '#a855f7',
+    'from-green-400': '#4ade80', 'via-emerald-500': '#10b981', 'to-teal-600': '#0d9488',
+    'from-gray-500': '#6b7280', 'via-gray-700': '#374151',
+    'from-pink-400': '#f472b6', 'via-rose-500': '#f43f5e', 'to-red-600': '#dc2626',
+    'from-green-300': '#86efac', 'via-lime-400': '#a3e635', 'to-emerald-500': '#10b981',
+    'from-rose-300': '#fda4af', 'via-pink-400': '#f472b6', 'to-fuchsia-500': '#d946ef',
+    'from-yellow-300': '#fde047', 'via-amber-400': '#fbbf24', 'to-orange-500': '#f97316',
+    'from-teal-300': '#5eead4', 'via-cyan-400': '#22d3ee', 'to-blue-500': '#3b82f6',
+    'from-orange-200': '#fed7aa', 'via-amber-300': '#fcd34d', 'to-yellow-400': '#facc15',
+    'from-red-300': '#fca5a5', 'via-rose-400': '#fb7185', 'to-pink-500': '#ec4899',
+    'from-purple-400': '#c084fc', 'via-fuchsia-500': '#d946ef', 'to-pink-600': '#db2777',
+    'from-indigo-300': '#a5b4fc', 'via-blue-400': '#60a5fa', 'to-cyan-500': '#06b6d4',
+    'from-orange-300': '#fdba74', 'via-amber-400': '#fbbf24', 'to-yellow-500': '#eab308',
+    'from-violet-300': '#c4b5fd', 'via-purple-400': '#c084fc', 'to-indigo-500': '#6366f1',
+    'from-slate-700': '#334155', 'via-gray-800': '#1f2937', 'to-black': '#000000',
+    'from-teal-300': '#5eead4', 'via-cyan-400': '#22d3ee',
+    'from-amber-200': '#fde68a', 'via-yellow-300': '#fde047',
+    'from-pink-300': '#f9a8d4', 'via-fuchsia-400': '#e879f9', 'to-purple-500': '#a855f7',
+    'from-red-400': '#f87171', 'via-rose-500': '#f43f5e',
+    'from-indigo-400': '#818cf8', 'via-blue-500': '#3b82f6', 'to-violet-600': '#7c3aed',
+  };
+  const parts = article.gradient.split(' ');
+  const color1 = gradientMap[parts[0]] || '#f472b6';
+  const color2 = gradientMap[parts[1]] || '#ec4899';
+  const color3 = parts[2] ? (gradientMap[parts[2]] || color2) : color2;
+  const cssGradient = `linear-gradient(135deg, ${color1}, ${color2}, ${color3})`;
+
+  return (
   <div
     style={{ ...styles.card, ...style, cursor: 'pointer' }}
     onClick={() => navigate(`/magazine/${article.id}`)}
     className="magazine-card"
   >
-    <div style={styles.cardImage(article.gradient, article.emoji)}>
-      <span style={{ filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.15))' }} className="card-image-emoji">
+    <div style={styles.cardImage(cssGradient, article.emoji, article.image)}>
+      {article.image && (
+        <img
+          src={article.image}
+          alt={article.title}
+          style={styles.cardImageImg}
+          loading="lazy"
+        />
+      )}
+      <span style={{ filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.15))', zIndex: 1 }} className="card-image-emoji">
         {article.emoji}
       </span>
       <span style={styles.cardBadge}>{article.category}</span>
@@ -309,7 +291,7 @@ const MagazineCard = ({ article, style, navigate }) => (
 const Magazine = () => {
   const [activeCategory, setActiveCategory] = useState('الكل');
   const [loading, setLoading] = useState(false);
-  const [filtered, setFiltered] = useState(mockArticles);
+  const [filtered, setFiltered] = useState(articles);
   const gridRef = useRef(null);
   const navigate = useNavigate();
 
@@ -318,9 +300,9 @@ const Magazine = () => {
     setLoading(true);
     const timer = setTimeout(() => {
       if (activeCategory === 'الكل') {
-        setFiltered(mockArticles);
+        setFiltered(articles);
       } else {
-        setFiltered(mockArticles.filter((a) => a.category === activeCategory));
+        setFiltered(articles.filter((a) => a.category === activeCategory));
       }
       setLoading(false);
     }, 500);
