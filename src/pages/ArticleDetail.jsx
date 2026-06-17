@@ -5,6 +5,16 @@ import articles from '../data/articles';
 export default function ArticleDetail() {
   const { id } = useParams();
   const [visible, setVisible] = useState(false);
+  const [likes, setLikes] = useState(() => {
+    try { return parseInt(localStorage.getItem(`article_likes_${id}`) || '0'); } catch { return 0; }
+  });
+  const [dislikes, setDislikes] = useState(() => {
+    try { return parseInt(localStorage.getItem(`article_dislikes_${id}`) || '0'); } catch { return 0; }
+  });
+  const [userVote, setUserVote] = useState(() => {
+    try { return localStorage.getItem(`article_vote_${id}`) || null; } catch { return null; }
+  });
+  const [animating, setAnimating] = useState(null);
 
   const article = articles.find((a) => a.id === Number(id));
 
@@ -207,6 +217,76 @@ export default function ArticleDetail() {
           transform: translateY(-2px);
         }
 
+        /* ===== LIKE / DISLIKE ===== */
+        .reaction-section {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 16px;
+          padding: 24px 0;
+          border-top: 1px solid #e8e4de;
+          margin-top: 8px;
+        }
+        .reaction-btn {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 10px 24px;
+          border-radius: 12px;
+          border: 2px solid #e8e4de;
+          background: #fff;
+          cursor: pointer;
+          font-family: 'Cairo', sans-serif;
+          font-size: 0.9rem;
+          font-weight: 700;
+          transition: all 0.25s ease;
+          position: relative;
+          overflow: hidden;
+        }
+        .reaction-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        }
+        .reaction-btn.like-btn:hover,
+        .reaction-btn.like-btn.active {
+          border-color: #10b981;
+          background: #ecfdf5;
+          color: #10b981;
+        }
+        .reaction-btn.dislike-btn:hover,
+        .reaction-btn.dislike-btn.active {
+          border-color: #ef4444;
+          background: #fef2f2;
+          color: #ef4444;
+        }
+        .reaction-btn .count {
+          font-size: 0.85rem;
+          font-weight: 800;
+          min-width: 20px;
+          text-align: center;
+        }
+        .reaction-btn .emoji {
+          font-size: 1.2rem;
+          transition: transform 0.2s ease;
+        }
+        .reaction-btn:hover .emoji,
+        .reaction-btn.active .emoji {
+          transform: scale(1.2);
+        }
+        .reaction-btn.pop .emoji {
+          animation: popEmoji 0.3s ease;
+        }
+        @keyframes popEmoji {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.4); }
+          100% { transform: scale(1.2); }
+        }
+        .reaction-label {
+          font-size: 0.82rem;
+          color: #999;
+          font-weight: 600;
+        }
+
         .related-section {
           max-width: 1200px;
           margin: 0 auto;
@@ -327,6 +407,59 @@ export default function ArticleDetail() {
           {paragraphs.map((para, idx) => (
             <p key={idx} className="article-paragraph">{para}</p>
           ))}
+
+          {/* Like / Dislike Section */}
+          <div className="reaction-section">
+            <span className="reaction-label">هل أعجبك المقال؟</span>
+            <button
+              className={`reaction-btn like-btn ${userVote === 'like' ? 'active' : ''} ${animating === 'like' ? 'pop' : ''}`}
+              onClick={() => {
+                if (userVote === 'like') {
+                  setLikes(l => l - 1);
+                  setUserVote(null);
+                  localStorage.setItem(`article_vote_${id}`, '');
+                } else {
+                  if (userVote === 'dislike') {
+                    setDislikes(d => d - 1);
+                    localStorage.setItem(`article_dislikes_${id}`, String(dislikes - 1));
+                  }
+                  setLikes(l => l + 1);
+                  setUserVote('like');
+                  localStorage.setItem(`article_vote_${id}`, 'like');
+                  localStorage.setItem(`article_likes_${id}`, String(likes + 1));
+                }
+                setAnimating('like');
+                setTimeout(() => setAnimating(null), 300);
+              }}
+            >
+              <span className="emoji">👍</span>
+              <span className="count">{likes}</span>
+            </button>
+            <button
+              className={`reaction-btn dislike-btn ${userVote === 'dislike' ? 'active' : ''} ${animating === 'dislike' ? 'pop' : ''}`}
+              onClick={() => {
+                if (userVote === 'dislike') {
+                  setDislikes(d => d - 1);
+                  setUserVote(null);
+                  localStorage.setItem(`article_vote_${id}`, '');
+                } else {
+                  if (userVote === 'like') {
+                    setLikes(l => l - 1);
+                    localStorage.setItem(`article_likes_${id}`, String(likes - 1));
+                  }
+                  setDislikes(d => d + 1);
+                  setUserVote('dislike');
+                  localStorage.setItem(`article_vote_${id}`, 'dislike');
+                  localStorage.setItem(`article_dislikes_${id}`, String(dislikes + 1));
+                }
+                setAnimating('dislike');
+                setTimeout(() => setAnimating(null), 300);
+              }}
+            >
+              <span className="emoji">👎</span>
+              <span className="count">{dislikes}</span>
+            </button>
+          </div>
 
           {/* Share Section */}
           <div className="share-section">

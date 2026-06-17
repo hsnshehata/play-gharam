@@ -13,25 +13,13 @@ function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center">
           {/* Logo */}
-          <Link to="/magazine" className="inline-flex items-center gap-3 mb-4 group">
+          <Link to="/magazine" className="inline-flex items-center justify-center mb-6 group">
             <img
-              src="/logo.png"
+              src="/logo-big.png"
               alt="غرام سلطان"
-              className="h-10 w-10 rounded-lg object-contain"
+              className="h-16 object-contain transition-transform duration-300 group-hover:scale-105"
+              style={{ filter: 'drop-shadow(0 4px 12px rgba(212, 175, 55, 0.2))' }}
             />
-            <span
-              style={{
-                fontFamily: "'Playfair Display', serif",
-                fontSize: '1.6rem',
-                fontWeight: 800,
-                background: 'linear-gradient(135deg, #d4af37, #c9a030)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                textDecoration: 'none',
-              }}
-            >
-              غرام سلطان
-            </span>
           </Link>
 
           <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.4)' }}>

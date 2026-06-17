@@ -316,18 +316,17 @@ function Home() {
         <section className="hero">
           <div className="hero-content">
             <img
-              src="/logo.png"
+              src="/logo-big.png"
               alt="غرام سلطان"
-              className="mx-auto mb-6"
+              className="mx-auto mb-4 transition-transform duration-300 hover:scale-105"
               style={{
-                height: '80px',
-                width: '80px',
+                height: '100px',
+                width: 'auto',
                 objectFit: 'contain',
-                filter: 'drop-shadow(0 4px 20px rgba(212, 175, 55, 0.3))',
+                filter: 'drop-shadow(0 4px 24px rgba(212, 175, 55, 0.3))',
               }}
             />
-            <h1 className="hero-title">غرام سلطان</h1>
-            <div className="hero-divider" />
+              <div className="hero-divider" />
             <p className="hero-subtitle">دليلك الشامل لعالم الجمال والأناقة</p>
             <p className="hero-desc">
               أحدث نصائح التجميل، الميك أب، العناية بالشعر والبشرة،<br />

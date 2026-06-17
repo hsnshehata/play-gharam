@@ -72,6 +72,12 @@ const Magazine = () => {
           letter-spacing: 2px;
           text-shadow: 0 2px 20px rgba(212, 175, 55, 0.3);
         }
+        .magazine-logo-img {
+          height: 70px;
+          width: auto;
+          object-fit: contain;
+          filter: drop-shadow(0 2px 20px rgba(212, 175, 55, 0.3));
+        }
         .magazine-tagline {
           font-size: clamp(0.85rem, 2.5vw, 1.1rem);
           color: rgba(255,255,255,0.7);
@@ -381,7 +387,7 @@ const Magazine = () => {
         {/* ===== HEADER ===== */}
         <header className="magazine-header">
           <div className="magazine-header-content">
-            <h1 className="magazine-logo">غرام سلطان</h1>
+            <img src="/logo-big.png" alt="غرام سلطان" className="magazine-logo-img" />
             <div className="magazine-divider" />
             <p className="magazine-tagline">دليلك الشامل لعالم الجمال والأناقة</p>
             <div className="search-container">

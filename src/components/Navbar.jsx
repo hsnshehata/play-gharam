@@ -38,27 +38,11 @@ function Navbar() {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
             <img
-              src="/logo.png"
+              src="/logo-big.png"
               alt="غرام سلطان"
-              className="h-10 w-10 rounded-lg object-contain"
+              className="h-11 object-contain transition-transform duration-300 group-hover:scale-105"
               style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }}
             />
-            <div className="flex flex-col">
-              <span
-                className="text-lg font-bold transition-all duration-300 group-hover:scale-105 leading-tight"
-                style={{
-                  fontFamily: "'Playfair Display', serif",
-                  background: 'linear-gradient(135deg, #d4af37, #c9a030)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}
-              >
-                غرام سلطان
-              </span>
-              <span className="text-[10px] text-gray-400 tracking-wider leading-tight" style={{ fontFamily: "'Cairo', sans-serif" }}>
-                مجلة الجمال والأناقة
-              </span>
-            </div>
           </Link>
 
           {/* Desktop Navigation */}
