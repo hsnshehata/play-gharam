@@ -36,21 +36,29 @@ function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-[76px]">
           {/* Logo */}
-          <Link to="/" className="flex flex-col items-start group">
-            <span
-              className="text-xl font-bold transition-all duration-300 group-hover:scale-105"
-              style={{
-                fontFamily: "'Playfair Display', serif",
-                background: 'linear-gradient(135deg, #d4af37, #c9a030)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}
-            >
-              غرام سلطان
-            </span>
-            <span className="text-[10px] text-gray-400 -mt-1 tracking-wider" style={{ fontFamily: "'Cairo', sans-serif" }}>
-              مجلة الجمال والأناقة
-            </span>
+          <Link to="/" className="flex items-center gap-3 group">
+            <img
+              src="/logo.png"
+              alt="غرام سلطان"
+              className="h-10 w-10 rounded-lg object-contain"
+              style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }}
+            />
+            <div className="flex flex-col">
+              <span
+                className="text-lg font-bold transition-all duration-300 group-hover:scale-105 leading-tight"
+                style={{
+                  fontFamily: "'Playfair Display', serif",
+                  background: 'linear-gradient(135deg, #d4af37, #c9a030)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}
+              >
+                غرام سلطان
+              </span>
+              <span className="text-[10px] text-gray-400 tracking-wider leading-tight" style={{ fontFamily: "'Cairo', sans-serif" }}>
+                مجلة الجمال والأناقة
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}

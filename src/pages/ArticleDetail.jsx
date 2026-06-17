@@ -14,6 +14,7 @@ export default function ArticleDetail() {
     : [];
 
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
     const timer = setTimeout(() => setVisible(true), 50);
     return () => clearTimeout(timer);
   }, [id]);
@@ -350,14 +351,22 @@ export default function ArticleDetail() {
               const rc2 = gradientMap[rParts[1]] || '#c9a030';
               const rc3 = rParts[2] ? (gradientMap[rParts[2]] || rc2) : rc2;
               const rGrad = `linear-gradient(135deg, ${rc1}, ${rc2}, ${rc3})`;
+              const imageBg = rel.image ? `url(${rel.image})` : rGrad;
 
               return (
-                <Link key={rel.id} to={`/magazine/${rel.id}`} className="related-card">
+                <Link
+                  key={rel.id}
+                  to={`/magazine/${rel.id}`}
+                  className="related-card"
+                  onClick={() => window.scrollTo({ top: 0, behavior: 'instant' })}
+                >
                   <div
                     className="related-card-image"
                     style={{
-                      backgroundImage: rel.image ? `url(${rel.image})` : 'none',
-                      background: rel.image ? undefined : rGrad,
+                      background: imageBg,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      backgroundRepeat: 'no-repeat',
                     }}
                   >
                     <div className="related-card-overlay" />

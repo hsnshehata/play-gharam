@@ -315,7 +315,17 @@ function Home() {
         {/* ===== HERO ===== */}
         <section className="hero">
           <div className="hero-content">
-            <span className="hero-emoji">✨</span>
+            <img
+              src="/logo.png"
+              alt="غرام سلطان"
+              className="mx-auto mb-6"
+              style={{
+                height: '80px',
+                width: '80px',
+                objectFit: 'contain',
+                filter: 'drop-shadow(0 4px 20px rgba(212, 175, 55, 0.3))',
+              }}
+            />
             <h1 className="hero-title">غرام سلطان</h1>
             <div className="hero-divider" />
             <p className="hero-subtitle">دليلك الشامل لعالم الجمال والأناقة</p>
