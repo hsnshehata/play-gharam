@@ -73,10 +73,11 @@ const Magazine = () => {
           text-shadow: 0 2px 20px rgba(212, 175, 55, 0.3);
         }
         .magazine-logo-img {
-          height: 70px;
+          height: 80px;
           width: auto;
           object-fit: contain;
           filter: drop-shadow(0 2px 20px rgba(212, 175, 55, 0.3));
+          margin-bottom: 12px;
         }
         .magazine-tagline {
           font-size: clamp(0.85rem, 2.5vw, 1.1rem);
