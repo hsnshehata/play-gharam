@@ -62,6 +62,10 @@ const Magazine = () => {
           z-index: 1;
           max-width: 800px;
           margin: 0 auto;
+          text-align: center;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
         }
         .magazine-logo {
           font-family: 'Playfair Display', serif;
@@ -98,6 +102,7 @@ const Magazine = () => {
           max-width: 500px;
           margin: 0 auto;
           position: relative;
+          width: 100%;
         }
         .search-input {
           width: 100%;
