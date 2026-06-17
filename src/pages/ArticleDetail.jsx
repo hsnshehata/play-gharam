@@ -52,6 +52,60 @@ export default function ArticleDetail() {
 
   const paragraphs = article.content.split('\n\n').filter(Boolean);
 
+  // Smart paragraph parser - detects headings, lists, bold text
+  const renderContent = () => {
+    return paragraphs.map((para, idx) => {
+      const trimmed = para.trim();
+      
+      // Detect list items (lines starting with -, •, or numbers like 1- 2- or ١- ٢-)
+      if (/^[-•]\s/.test(trimmed) || /^[١-٩\d]+[-.)]\s/.test(trimmed)) {
+        const items = trimmed.split('\n').filter(l => l.trim());
+        return (
+          <ul key={idx} style={{ margin: '0 0 24px', padding: '0 24px', listStyle: 'disc' }}>
+            {items.map((item, i) => (
+              <li key={i} style={{ fontSize: '1.12rem', color: '#3a3a3a', lineHeight: 2, marginBottom: 8 }} dangerouslySetInnerHTML={{ __html: formatInline(item.replace(/^[-•]\s|^[١-٩\d]+[-.)]\s/, '')) }} />
+            ))}
+          </ul>
+        );
+      }
+      
+      // Detect sub-headings (lines with "أولاً", "ثانياً", "ثالثاً", or ending with ":", or short lines < 60 chars that look like titles)
+      const isSubHeading = 
+        /^(أولاً|ثانياً|ثالثاً|رابعاً|خامساً|سادساً|سابعاً|ثامناً|تاسعاً|عاشرة|النقطة|الخطوة|المرحلة|نصيحة|مهم|تجنبي|استخدمي|تذكري)/i.test(trimmed) ||
+        (trimmed.endsWith('：') || trimmed.endsWith(':')) && trimmed.length < 80 ||
+        /^【.+】$/.test(trimmed) ||
+        /^\d+\.\s+.+:$/.test(trimmed);
+      
+      if (isSubHeading) {
+        return (
+          <h3 key={idx} style={{
+            fontSize: '1.25rem',
+            fontWeight: 800,
+            color: '#1a1a2e',
+            margin: '32px 0 16px',
+            lineHeight: 1.5,
+            paddingBottom: 8,
+            borderBottom: '2px solid #d4af37',
+            display: 'inline-block',
+          }} dangerouslySetInnerHTML={{ __html: formatInline(trimmed) }} />
+        );
+      }
+      
+      // Regular paragraph
+      return (
+        <p key={idx} className="article-paragraph" dangerouslySetInnerHTML={{ __html: formatInline(trimmed) }} />
+      );
+    });
+  };
+
+  // Format inline text: **bold**, "quotes", etc.
+  const formatInline = (text) => {
+    return text
+      .replace(/\*\*(.+?)\*\*/g, '<strong style="color:#1a1a2e;font-weight:700;">$1</strong>')
+      .replace(/"(.+?)"/g, '<span style="color:#d4af37;font-weight:600;">"$1"</span>')
+      .replace(/\((.+?)\)/g, '<span style="color:#999;font-size:0.95em;">($1)</span>');
+  };
+
   const gradientMap = {
     'from-pink-400': '#f472b6', 'via-rose-500': '#f43f5e', 'to-fuchsia-600': '#d946ef',
     'from-emerald-300': '#6ee7b7', 'via-teal-400': '#2dd4bf', 'to-cyan-500': '#06b6d4',
@@ -404,9 +458,7 @@ export default function ArticleDetail() {
       {/* ===== ARTICLE CONTENT ===== */}
       <div className="article-body">
         <div className="article-content-card">
-          {paragraphs.map((para, idx) => (
-            <p key={idx} className="article-paragraph">{para}</p>
-          ))}
+          {renderContent()}
 
           {/* Like / Dislike Section */}
           <div className="reaction-section">
