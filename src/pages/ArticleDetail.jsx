@@ -52,58 +52,72 @@ export default function ArticleDetail() {
 
   const paragraphs = article.content.split('\n\n').filter(Boolean);
 
-  // Smart paragraph parser - detects headings, lists, bold text
+  // Smart content parser for Arabic magazine articles
   const renderContent = () => {
     return paragraphs.map((para, idx) => {
       const trimmed = para.trim();
+      const charCount = trimmed.length;
       
-      // Detect list items (lines starting with -, •, or numbers like 1- 2- or ١- ٢-)
-      if (/^[-•]\s/.test(trimmed) || /^[١-٩\d]+[-.)]\s/.test(trimmed)) {
-        const items = trimmed.split('\n').filter(l => l.trim());
-        return (
-          <ul key={idx} style={{ margin: '0 0 24px', padding: '0 24px', listStyle: 'disc' }}>
-            {items.map((item, i) => (
-              <li key={i} style={{ fontSize: '1.12rem', color: '#3a3a3a', lineHeight: 2, marginBottom: 8 }} dangerouslySetInnerHTML={{ __html: formatInline(item.replace(/^[-•]\s|^[١-٩\d]+[-.)]\s/, '')) }} />
-            ))}
-          </ul>
-        );
-      }
+      // === SUB-HEADING DETECTION ===
+      // Pattern 1: Lines ending with ":" or "：" (like "المميزات:", "العيوب:", "الخطوة الأولى:")
+      const endsWithColon = /[:：]\s*$/.test(trimmed) && charCount < 100;
       
-      // Detect sub-headings (lines with "أولاً", "ثانياً", "ثالثاً", or ending with ":", or short lines < 60 chars that look like titles)
-      const isSubHeading = 
-        /^(أولاً|ثانياً|ثالثاً|رابعاً|خامساً|سادساً|سابعاً|ثامناً|تاسعاً|عاشرة|النقطة|الخطوة|المرحلة|نصيحة|مهم|تجنبي|استخدمي|تذكري)/i.test(trimmed) ||
-        (trimmed.endsWith('：') || trimmed.endsWith(':')) && trimmed.length < 80 ||
-        /^【.+】$/.test(trimmed) ||
-        /^\d+\.\s+.+:$/.test(trimmed);
+      // Pattern 2: Short lines that look like section titles (< 50 chars, no period at end)
+      const isShortTitle = charCount < 50 && !trimmed.endsWith('.') && !trimmed.endsWith('،') && idx > 0;
       
-      if (isSubHeading) {
+      // Pattern 3: Lines starting with specific Arabic patterns
+      const startsWithPattern = /^(الخطوة|المرحلة|النقطة|نصيحة|مهم|تجنبي|استخدمي|تذكري|أولاً|ثانياً|ثالثاً|رابعاً|خامساً|المميزات|العيوب|النتيجة|الطريقة|الروتين|قبل|بعد|يوم|أسبوع|شهر|الصباح|الليل|اللمسة|في النهاية|والأهم|والأخير)/i.test(trimmed);
+      
+      // Pattern 4: Lines with "١)" "٢)" "٣)" or "1)" "2)" "3)"
+      const isNumberedSection = /^[١-٩\d]+[.)]\s+/.test(trimmed) && charCount < 80;
+      
+      // Pattern 5: First paragraph is always the intro (styled differently)
+      const isIntro = idx === 0;
+      
+      if (endsWithColon || isShortTitle || startsWithPattern || isNumberedSection) {
         return (
           <h3 key={idx} style={{
-            fontSize: '1.25rem',
+            fontSize: '1.3rem',
             fontWeight: 800,
             color: '#1a1a2e',
-            margin: '32px 0 16px',
-            lineHeight: 1.5,
-            paddingBottom: 8,
-            borderBottom: '2px solid #d4af37',
-            display: 'inline-block',
-          }} dangerouslySetInnerHTML={{ __html: formatInline(trimmed) }} />
+            margin: '36px 0 16px',
+            lineHeight: 1.6,
+            paddingBottom: 10,
+            borderBottom: '3px solid #d4af37',
+            display: 'block',
+          }}>
+            {trimmed}
+          </h3>
         );
       }
       
-      // Regular paragraph
+      // === INTRO PARAGRAPH (first one) ===
+      if (isIntro) {
+        return (
+          <p key={idx} style={{
+            fontSize: '1.2rem',
+            color: '#555',
+            lineHeight: 2.2,
+            margin: '0 0 28px',
+            textAlign: 'justify',
+            fontWeight: 500,
+            padding: '20px 24px',
+            background: 'linear-gradient(135deg, #fef9f4, #fdf2e9)',
+            borderRadius: '12px',
+            borderRight: '4px solid #d4af37',
+          }}>
+            {trimmed}
+          </p>
+        );
+      }
+      
+      // === REGULAR PARAGRAPH ===
       return (
-        <p key={idx} className="article-paragraph" dangerouslySetInnerHTML={{ __html: formatInline(trimmed) }} />
+        <p key={idx} className="article-paragraph">
+          {trimmed}
+        </p>
       );
     });
-  };
-
-  // Format inline text: **bold**, "quotes", etc.
-  const formatInline = (text) => {
-    return text
-      .replace(/\*\*(.+?)\*\*/g, '<strong style="color:#1a1a2e;font-weight:700;">$1</strong>')
-      .replace(/"(.+?)"/g, '<span style="color:#d4af37;font-weight:600;">"$1"</span>')
-      .replace(/\((.+?)\)/g, '<span style="color:#999;font-size:0.95em;">($1)</span>');
   };
 
   const gradientMap = {
