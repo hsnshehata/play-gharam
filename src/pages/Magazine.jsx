@@ -1,468 +1,526 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-
 import articles from '../data/articles';
 
 const categories = ['الكل', 'ميك أب', 'شعر', 'بشرة', 'عرايس', 'عناية', 'أظافر', 'صحة', 'موضة', 'عطور'];
 
-/* ==============================================================
-   STYLES (inline + keyframes in a style tag)
-   ============================================================== */
-const styles = {
-  container: {
-    direction: 'rtl',
-    fontFamily: "'Tajawal', 'Segoe UI', 'Cairo', sans-serif",
-    background: 'linear-gradient(180deg, #fef9f4 0%, #fff5f5 100%)',
-    minHeight: '100vh',
-    paddingBottom: '100px',
-  },
-  header: {
-    textAlign: 'center',
-    padding: '40px 20px 20px',
-    background: 'linear-gradient(135deg, #ff9a9e 0%, #fad0c4 50%, #fbc2eb 100%)',
-    borderBottom: '4px solid #f472b6',
-    position: 'relative',
-    overflow: 'hidden',
-  },
-  headerTitle: {
-    fontSize: 'clamp(1.8rem, 6vw, 3rem)',
-    fontWeight: 800,
-    color: '#4a044e',
-    margin: 0,
-    letterSpacing: '1px',
-    textShadow: '0 2px 8px rgba(244, 114, 182, 0.3)',
-  },
-  headerSub: {
-    fontSize: 'clamp(0.9rem, 3vw, 1.2rem)',
-    color: '#831843',
-    marginTop: '8px',
-    fontWeight: 500,
-    opacity: 0.9,
-  },
-  headerFlower: {
-    position: 'absolute',
-    fontSize: '2rem',
-    opacity: 0.15,
-    userSelect: 'none',
-  },
-  tabsContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '10px',
-    padding: '16px 20px',
-    flexWrap: 'wrap',
-    overflowX: 'auto',
-    background: '#fff',
-    borderBottom: '1px solid #f3e8f0',
-    position: 'sticky',
-    top: 0,
-    zIndex: 100,
-    boxShadow: '0 2px 12px rgba(244, 114, 182, 0.08)',
-  },
-  tabButton: (active) => ({
-    padding: '10px 24px',
-    border: 'none',
-    borderRadius: '30px',
-    fontSize: '0.95rem',
-    fontWeight: active ? 700 : 500,
-    cursor: 'pointer',
-    background: active
-      ? 'linear-gradient(135deg, #f472b6, #ec4899)'
-      : '#fdf2f8',
-    color: active ? '#fff' : '#831843',
-    boxShadow: active
-      ? '0 4px 14px rgba(244, 114, 182, 0.4)'
-      : '0 1px 3px rgba(0,0,0,0.04)',
-    transition: 'all 0.3s ease',
-  }),
-  grid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-    gap: '24px',
-    padding: '30px 20px',
-    maxWidth: '1200px',
-    margin: '0 auto',
-  },
-  card: {
-    background: '#fff',
-    borderRadius: '20px',
-    overflow: 'hidden',
-    boxShadow: '0 8px 30px rgba(244, 114, 182, 0.10), 0 2px 8px rgba(0,0,0,0.04)',
-    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-    cursor: 'pointer',
-    animation: 'fadeInUp 0.5s ease',
-  },
-  cardImage: (gradient, emoji, image) => ({
-    height: '180px',
-    background: gradient,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '4rem',
-    position: 'relative',
-    overflow: 'hidden',
-  }),
-  cardImageImg: {
-    position: 'absolute',
-    inset: 0,
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-    opacity: 0.55,
-  },
-  cardBadge: {
-    position: 'absolute',
-    top: '12px',
-    right: '12px',
-    background: 'linear-gradient(135deg, #f472b6, #ec4899)',
-    color: '#fff',
-    padding: '4px 14px',
-    borderRadius: '20px',
-    fontSize: '0.75rem',
-    fontWeight: 700,
-    boxShadow: '0 2px 8px rgba(244, 114, 182, 0.3)',
-  },
-  cardBody: {
-    padding: '18px 20px 20px',
-  },
-  cardTitle: {
-    fontSize: '1.1rem',
-    fontWeight: 700,
-    color: '#1f1a1f',
-    margin: '0 0 8px',
-    lineHeight: 1.4,
-  },
-  cardDesc: {
-    fontSize: '0.85rem',
-    color: '#6b5b6b',
-    margin: '0 0 12px',
-    lineHeight: 1.6,
-    display: '-webkit-box',
-    WebkitLineClamp: 3,
-    WebkitBoxOrient: 'vertical',
-    overflow: 'hidden',
-  },
-  cardFooter: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '0 20px 18px',
-    fontSize: '0.8rem',
-  },
-  date: {
-    color: '#a78ba0',
-  },
-  readMore: {
-    color: '#ec4899',
-    fontWeight: 700,
-    textDecoration: 'none',
-    fontSize: '0.85rem',
-    transition: 'color 0.2s',
-  },
-  floatingBtn: {
-    position: 'fixed',
-    bottom: '30px',
-    left: '30px',
-    zIndex: 999,
-    padding: '14px 28px',
-    border: 'none',
-    borderRadius: '50px',
-    background: 'linear-gradient(135deg, #f472b6, #ec4899)',
-    color: '#fff',
-    fontSize: '1rem',
-    fontWeight: 800,
-    cursor: 'pointer',
-    boxShadow: '0 6px 24px rgba(244, 114, 182, 0.5)',
-    transition: 'transform 0.2s, box-shadow 0.2s',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
-    letterSpacing: '1px',
-  },
-  loader: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: '80px 0',
-    flexDirection: 'column',
-    gap: '16px',
-  },
-  spinner: {
-    width: '50px',
-    height: '50px',
-    border: '4px solid #fce4ec',
-    borderTop: '4px solid #ec4899',
-    borderRadius: '50%',
-    animation: 'spin 0.8s linear infinite',
-  },
-  loaderText: {
-    color: '#831843',
-    fontWeight: 600,
-    fontSize: '1rem',
-  },
-  emptyState: {
-    textAlign: 'center',
-    padding: '60px 20px',
-    color: '#a78ba0',
-    fontSize: '1.1rem',
-  },
-};
-
-/* ==============================================================
-   MagazineCard Component
-   ============================================================== */
-const MagazineCard = ({ article, style, navigate }) => {
-  // Build gradient CSS from Tailwind classes
-  const gradientMap = {
-    'from-pink-400': '#f472b6', 'via-rose-500': '#f43f5e', 'to-fuchsia-600': '#d946ef',
-    'from-emerald-300': '#6ee7b7', 'via-teal-400': '#2dd4bf', 'to-cyan-500': '#06b6d4',
-    'from-red-400': '#f87171', 'to-pink-600': '#db2777',
-    'from-violet-300': '#c4b5fd', 'via-purple-400': '#c084fc', 'to-fuchsia-500': '#d946ef',
-    'from-indigo-400': '#818cf8', 'via-purple-500': '#a855f7', 'to-violet-600': '#7c3aed',
-    'from-amber-400': '#fbbf24', 'via-orange-500': '#f97316', 'to-red-600': '#dc2626',
-    'from-rose-300': '#fda4af', 'via-pink-400': '#f472b6',
-    'from-gray-800': '#1f2937', 'via-gray-700': '#374151', 'to-gray-900': '#111827',
-    'from-purple-300': '#d8b4fe', 'via-violet-400': '#a78bfa', 'to-indigo-500': '#6366f1',
-    'from-yellow-200': '#fef08a', 'via-amber-300': '#fcd34d', 'to-orange-400': '#fb923c',
-    'from-cyan-300': '#67e8f9', 'via-blue-400': '#60a5fa',
-    'from-pink-300': '#f9a8d4', 'via-fuchsia-400': '#e879f9', 'to-purple-500': '#a855f7',
-    'from-green-400': '#4ade80', 'via-emerald-500': '#10b981', 'to-teal-600': '#0d9488',
-    'from-gray-500': '#6b7280', 'via-gray-700': '#374151',
-    'from-pink-400': '#f472b6', 'via-rose-500': '#f43f5e', 'to-red-600': '#dc2626',
-    'from-green-300': '#86efac', 'via-lime-400': '#a3e635', 'to-emerald-500': '#10b981',
-    'from-rose-300': '#fda4af', 'via-pink-400': '#f472b6', 'to-fuchsia-500': '#d946ef',
-    'from-yellow-300': '#fde047', 'via-amber-400': '#fbbf24', 'to-orange-500': '#f97316',
-    'from-teal-300': '#5eead4', 'via-cyan-400': '#22d3ee', 'to-blue-500': '#3b82f6',
-    'from-orange-200': '#fed7aa', 'via-amber-300': '#fcd34d', 'to-yellow-400': '#facc15',
-    'from-red-300': '#fca5a5', 'via-rose-400': '#fb7185', 'to-pink-500': '#ec4899',
-    'from-purple-400': '#c084fc', 'via-fuchsia-500': '#d946ef', 'to-pink-600': '#db2777',
-    'from-indigo-300': '#a5b4fc', 'via-blue-400': '#60a5fa', 'to-cyan-500': '#06b6d4',
-    'from-orange-300': '#fdba74', 'via-amber-400': '#fbbf24', 'to-yellow-500': '#eab308',
-    'from-violet-300': '#c4b5fd', 'via-purple-400': '#c084fc', 'to-indigo-500': '#6366f1',
-    'from-slate-700': '#334155', 'via-gray-800': '#1f2937', 'to-black': '#000000',
-    'from-teal-300': '#5eead4', 'via-cyan-400': '#22d3ee',
-    'from-amber-200': '#fde68a', 'via-yellow-300': '#fde047',
-    'from-pink-300': '#f9a8d4', 'via-fuchsia-400': '#e879f9', 'to-purple-500': '#a855f7',
-    'from-red-400': '#f87171', 'via-rose-500': '#f43f5e',
-    'from-indigo-400': '#818cf8', 'via-blue-500': '#3b82f6', 'to-violet-600': '#7c3aed',
-  };
-  const parts = article.gradient.split(' ');
-  const color1 = gradientMap[parts[0]] || '#f472b6';
-  const color2 = gradientMap[parts[1]] || '#ec4899';
-  const color3 = parts[2] ? (gradientMap[parts[2]] || color2) : color2;
-  const cssGradient = `linear-gradient(135deg, ${color1}, ${color2}, ${color3})`;
-
-  return (
-  <div
-    style={{ ...styles.card, ...style, cursor: 'pointer' }}
-    onClick={() => navigate(`/magazine/${article.id}`)}
-    className="magazine-card"
-  >
-    <div style={styles.cardImage(cssGradient, article.emoji, article.image)}>
-      {article.image && (
-        <img
-          src={article.image}
-          alt={article.title}
-          style={styles.cardImageImg}
-          loading="lazy"
-        />
-      )}
-      <span style={{ filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.15))', zIndex: 1 }} className="card-image-emoji">
-        {article.emoji}
-      </span>
-      <span style={styles.cardBadge}>{article.category}</span>
-    </div>
-    <div style={styles.cardBody}>
-      <h3 style={styles.cardTitle}>{article.title}</h3>
-      <p style={styles.cardDesc}>{article.description}</p>
-    </div>
-    <div style={styles.cardFooter}>
-      <span style={styles.date}>{article.date}</span>
-      <span style={styles.readMore}>
-        اقرأي المزيد ←
-      </span>
-    </div>
-  </div>
-    );
-  };
-};
-
-/* ==============================================================
-   Magazine Page
-   ============================================================== */
 const Magazine = () => {
   const [activeCategory, setActiveCategory] = useState('الكل');
-  const [loading, setLoading] = useState(false);
   const [filtered, setFiltered] = useState(articles);
-  const gridRef = useRef(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
+  const gridRef = useRef(null);
 
-  // Filter animation on category change
   useEffect(() => {
-    setLoading(true);
-    const timer = setTimeout(() => {
-      if (activeCategory === 'الكل') {
-        setFiltered(articles);
-      } else {
-        setFiltered(articles.filter((a) => a.category === activeCategory));
-      }
-      setLoading(false);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [activeCategory]);
+    let result = articles;
+    if (activeCategory !== 'الكل') {
+      result = result.filter((a) => a.category === activeCategory);
+    }
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      result = result.filter(
+        (a) =>
+          a.title.toLowerCase().includes(q) ||
+          a.description.toLowerCase().includes(q) ||
+          a.category.toLowerCase().includes(q)
+      );
+    }
+    setFiltered(result);
+  }, [activeCategory, searchQuery]);
 
   return (
     <>
-      {/* Inject @keyframes + base RTL style */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;700;800&family=Tajawal:wght@400;500;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap');
 
-        * {
-          box-sizing: border-box;
-        }
-        body {
-          margin: 0;
-          font-family: 'Tajawal', 'Cairo', sans-serif;
-        }
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'Cairo', sans-serif; }
 
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
+        .magazine-page {
+          direction: rtl;
+          background: #faf8f5;
+          min-height: 100vh;
+          padding-bottom: 60px;
         }
 
-        @keyframes fadeInUp {
-          0% {
-            opacity: 0;
-            transform: translateY(24px);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0);
-          }
+        /* ===== HEADER ===== */
+        .magazine-header {
+          background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+          padding: 60px 20px 50px;
+          text-align: center;
+          position: relative;
+          overflow: hidden;
+        }
+        .magazine-header::before {
+          content: '';
+          position: absolute;
+          top: 0; left: 0; right: 0; bottom: 0;
+          background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4af37' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        .magazine-header-content {
+          position: relative;
+          z-index: 1;
+          max-width: 800px;
+          margin: 0 auto;
+        }
+        .magazine-logo {
+          font-family: 'Playfair Display', serif;
+          font-size: clamp(2rem, 6vw, 3.5rem);
+          font-weight: 800;
+          color: #d4af37;
+          margin: 0 0 8px;
+          letter-spacing: 2px;
+          text-shadow: 0 2px 20px rgba(212, 175, 55, 0.3);
+        }
+        .magazine-tagline {
+          font-size: clamp(0.85rem, 2.5vw, 1.1rem);
+          color: rgba(255,255,255,0.7);
+          font-weight: 300;
+          margin: 0 0 24px;
+          letter-spacing: 1px;
+        }
+        .magazine-divider {
+          width: 80px;
+          height: 2px;
+          background: linear-gradient(90deg, transparent, #d4af37, transparent);
+          margin: 0 auto 24px;
         }
 
-        @keyframes pulse {
-          0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.05); }
+        /* ===== SEARCH ===== */
+        .search-container {
+          max-width: 500px;
+          margin: 0 auto;
+          position: relative;
+        }
+        .search-input {
+          width: 100%;
+          padding: 14px 48px 14px 20px;
+          border: 2px solid rgba(212, 175, 55, 0.3);
+          border-radius: 50px;
+          background: rgba(255,255,255,0.08);
+          color: #fff;
+          font-size: 0.95rem;
+          font-family: 'Cairo', sans-serif;
+          outline: none;
+          transition: all 0.3s ease;
+          direction: rtl;
+        }
+        .search-input::placeholder {
+          color: rgba(255,255,255,0.4);
+        }
+        .search-input:focus {
+          border-color: #d4af37;
+          background: rgba(255,255,255,0.12);
+          box-shadow: 0 0 20px rgba(212, 175, 55, 0.15);
+        }
+        .search-icon {
+          position: absolute;
+          right: 18px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: rgba(255,255,255,0.4);
+          font-size: 1.1rem;
         }
 
-        .magazine-card:hover {
-          transform: translateY(-6px) !important;
-          box-shadow: 0 16px 48px rgba(244, 114, 182, 0.18) !important;
+        /* ===== CATEGORY TABS ===== */
+        .tabs-wrapper {
+          background: #fff;
+          border-bottom: 1px solid #e8e4de;
+          position: sticky;
+          top: 76px;
+          z-index: 100;
+          box-shadow: 0 2px 12px rgba(0,0,0,0.04);
         }
-
-        .magazine-card:hover .card-image-emoji {
-          animation: pulse 0.8s ease infinite;
+        .tabs-container {
+          display: flex;
+          justify-content: center;
+          gap: 6px;
+          padding: 16px 20px;
+          flex-wrap: wrap;
+          max-width: 1200px;
+          margin: 0 auto;
         }
-
+        .tab-btn {
+          padding: 8px 20px;
+          border: 1px solid #e8e4de;
+          border-radius: 8px;
+          font-size: 0.88rem;
+          font-weight: 600;
+          cursor: pointer;
+          font-family: 'Cairo', sans-serif;
+          transition: all 0.25s ease;
+          background: #fff;
+          color: #6b6b6b;
+        }
         .tab-btn:hover {
+          border-color: #d4af37;
+          color: #d4af37;
           transform: translateY(-1px);
-          filter: brightness(1.05);
+        }
+        .tab-btn.active {
+          background: #1a1a2e;
+          color: #d4af37;
+          border-color: #1a1a2e;
+          box-shadow: 0 4px 12px rgba(26, 26, 46, 0.2);
         }
 
-        .floating-btn:hover {
-          transform: scale(1.06);
-          box-shadow: 0 8px 32px rgba(244, 114, 182, 0.6) !important;
+        /* ===== ARTICLES GRID ===== */
+        .articles-section {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 40px 20px;
+        }
+        .section-label {
+          font-size: 0.75rem;
+          font-weight: 700;
+          color: #d4af37;
+          text-transform: uppercase;
+          letter-spacing: 3px;
+          margin-bottom: 8px;
+        }
+        .section-title {
+          font-family: 'Playfair Display', serif;
+          font-size: clamp(1.5rem, 4vw, 2.2rem);
+          font-weight: 700;
+          color: #1a1a2e;
+          margin: 0 0 32px;
+        }
+        .articles-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+          gap: 32px;
         }
 
-        .floating-btn:active {
-          transform: scale(0.97);
+        /* ===== ARTICLE CARD ===== */
+        .article-card {
+          background: #fff;
+          border-radius: 16px;
+          overflow: hidden;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+          transition: all 0.35s ease;
+          cursor: pointer;
+          border: 1px solid #f0ece5;
+          animation: fadeInUp 0.5s ease;
+        }
+        .article-card:hover {
+          transform: translateY(-8px);
+          box-shadow: 0 16px 48px rgba(0,0,0,0.12);
+        }
+        .card-image-wrapper {
+          position: relative;
+          height: 220px;
+          overflow: hidden;
+        }
+        .card-image-bg {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.5s ease;
+        }
+        .article-card:hover .card-image-bg {
+          transform: scale(1.05);
+        }
+        .card-image-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.6) 100%);
+        }
+        .card-category-badge {
+          position: absolute;
+          top: 16px;
+          right: 16px;
+          background: rgba(212, 175, 55, 0.9);
+          color: #1a1a2e;
+          padding: 5px 14px;
+          border-radius: 6px;
+          font-size: 0.75rem;
+          font-weight: 700;
+          letter-spacing: 0.5px;
+        }
+        .card-emoji {
+          position: absolute;
+          bottom: 16px;
+          left: 16px;
+          font-size: 2rem;
+          filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+        .card-body {
+          padding: 24px;
+        }
+        .card-date {
+          font-size: 0.78rem;
+          color: #a0a0a0;
+          font-weight: 500;
+          margin-bottom: 8px;
+        }
+        .card-title {
+          font-size: 1.15rem;
+          font-weight: 700;
+          color: #1a1a2e;
+          margin: 0 0 10px;
+          line-height: 1.5;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+        .card-desc {
+          font-size: 0.88rem;
+          color: #7a7a7a;
+          line-height: 1.7;
+          margin: 0;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+        .card-footer {
+          padding: 0 24px 20px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .read-more {
+          color: #d4af37;
+          font-weight: 700;
+          font-size: 0.85rem;
+          text-decoration: none;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          transition: gap 0.2s ease;
+        }
+        .read-more:hover {
+          gap: 10px;
         }
 
-        @media (max-width: 640px) {
-          .magazine-grid {
-            grid-template-columns: 1fr !important;
-            padding: 16px 12px !important;
+        /* ===== FEATURED ARTICLE (first one bigger) ===== */
+        .featured-card {
+          grid-column: 1 / -1;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 0;
+          min-height: 320px;
+        }
+        .featured-card .card-image-wrapper {
+          height: 100%;
+          min-height: 320px;
+        }
+        .featured-card .card-body {
+          padding: 40px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+        .featured-card .card-title {
+          font-size: clamp(1.3rem, 3vw, 1.8rem);
+          -webkit-line-clamp: 3;
+        }
+        .featured-card .card-desc {
+          font-size: 0.95rem;
+          -webkit-line-clamp: 4;
+        }
+        .featured-label {
+          display: inline-block;
+          background: linear-gradient(135deg, #d4af37, #c9a030);
+          color: #1a1a2e;
+          padding: 4px 14px;
+          border-radius: 6px;
+          font-size: 0.72rem;
+          font-weight: 800;
+          letter-spacing: 1px;
+          margin-bottom: 16px;
+          width: fit-content;
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+          text-align: center;
+          padding: 80px 20px;
+          color: #a0a0a0;
+        }
+        .empty-state .emoji { font-size: 3rem; margin-bottom: 16px; }
+        .empty-state p { font-size: 1.1rem; }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeInUp {
+          0% { opacity: 0; transform: translateY(20px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+          .articles-grid {
+            grid-template-columns: 1fr;
+            gap: 24px;
           }
-        }
-
-        @media (min-width: 641px) and (max-width: 1024px) {
-          .magazine-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
+          .featured-card {
+            grid-template-columns: 1fr;
           }
-        }
-
-        @media (min-width: 1025px) {
-          .magazine-grid {
-            grid-template-columns: repeat(3, 1fr) !important;
+          .featured-card .card-image-wrapper {
+            min-height: 220px;
+            height: 220px;
+          }
+          .featured-card .card-body {
+            padding: 24px;
+          }
+          .tabs-container {
+            justify-content: flex-start;
+            overflow-x: auto;
+            flex-wrap: nowrap;
+            padding: 12px 16px;
+            -webkit-overflow-scrolling: touch;
+          }
+          .tab-btn {
+            flex-shrink: 0;
           }
         }
       `}</style>
 
-      <div style={styles.container}>
+      <div className="magazine-page">
         {/* ===== HEADER ===== */}
-        <header style={styles.header}>
-          <span style={{ ...styles.headerFlower, top: '10px', left: '20px', transform: 'rotate(-20deg)' }}>
-            🌸
-          </span>
-          <span style={{ ...styles.headerFlower, bottom: '10px', right: '30px', transform: 'rotate(15deg)' }}>
-            💐
-          </span>
-          <span style={{ ...styles.headerFlower, top: '30%', right: '8%', fontSize: '1.5rem' }}>
-            ✿
-          </span>
-          <h1 style={styles.headerTitle}>مجلة غرام الجمالية 📰</h1>
-          <p style={styles.headerSub}>آخر صيحات التجميل والميك أب</p>
+        <header className="magazine-header">
+          <div className="magazine-header-content">
+            <h1 className="magazine-logo">غرام سلطان</h1>
+            <div className="magazine-divider" />
+            <p className="magazine-tagline">دليلك الشامل لعالم الجمال والأناقة</p>
+            <div className="search-container">
+              <span className="search-icon">🔍</span>
+              <input
+                type="text"
+                className="search-input"
+                placeholder="ابحثي في المجلة..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+          </div>
         </header>
 
         {/* ===== CATEGORY TABS ===== */}
-        <div style={styles.tabsContainer}>
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              className="tab-btn"
-              style={styles.tabButton(activeCategory === cat)}
-              onClick={() => setActiveCategory(cat)}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-
-        {/* ===== GRID / LOADING / EMPTY ===== */}
-        {loading ? (
-          <div style={styles.loader}>
-            <div style={styles.spinner} />
-            <span style={styles.loaderText}>جاري تحميل المقالات...</span>
-          </div>
-        ) : filtered.length === 0 ? (
-          <div style={styles.emptyState}>
-            <p>😔 لا توجد مقالات في هذا القسم حالياً</p>
-            <p style={{ fontSize: '0.9rem', color: '#c4a4b8', marginTop: '8px' }}>
-              جربي تصفح أقسام أخرى
-            </p>
-          </div>
-        ) : (
-          <div
-            ref={gridRef}
-            className="magazine-grid"
-            style={styles.grid}
-          >
-            {filtered.map((article, idx) => (
-              <div
-                key={article.id}
-                className="magazine-card"
-                style={{
-                  animationDelay: `${idx * 0.08}s`,
-                }}
+        <div className="tabs-wrapper">
+          <div className="tabs-container">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                className={`tab-btn ${activeCategory === cat ? 'active' : ''}`}
+                onClick={() => setActiveCategory(cat)}
               >
-                <MagazineCard article={article} navigate={navigate} />
-              </div>
+                {cat}
+              </button>
             ))}
           </div>
-        )}
+        </div>
 
-        {/* ===== FLOATING BOOKING BUTTON ===== */}
-        <a
-          href="https://gharam.art"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ textDecoration: 'none' }}
-        >
-          <button className="floating-btn" style={styles.floatingBtn}>
-            💖 للحجز
-          </button>
-        </a>
+        {/* ===== ARTICLES ===== */}
+        <div className="articles-section" ref={gridRef}>
+          {activeCategory === 'الكل' && !searchQuery && (
+            <>
+              <div className="section-label">أحدث المقالات</div>
+              <h2 className="section-title">اكتشفي عالم الجمال</h2>
+            </>
+          )}
+          {activeCategory !== 'الكل' && (
+            <>
+              <div className="section-label">قسم</div>
+              <h2 className="section-title">{activeCategory}</h2>
+            </>
+          )}
+          {searchQuery && (
+            <>
+              <div className="section-label">نتائج البحث</div>
+              <h2 className="section-title">"{searchQuery}"</h2>
+            </>
+          )}
+
+          {filtered.length === 0 ? (
+            <div className="empty-state">
+              <div className="emoji">📭</div>
+              <p>لا توجد مقالات في هذا القسم حالياً</p>
+            </div>
+          ) : (
+            <div className="articles-grid">
+              {filtered.map((article, idx) => {
+                const gradientMap = {
+                  'from-pink-400': '#f472b6', 'via-rose-500': '#f43f5e', 'to-fuchsia-600': '#d946ef',
+                  'from-emerald-300': '#6ee7b7', 'via-teal-400': '#2dd4bf', 'to-cyan-500': '#06b6d4',
+                  'from-red-400': '#f87171', 'to-pink-600': '#db2777',
+                  'from-violet-300': '#c4b5fd', 'via-purple-400': '#c084fc', 'to-fuchsia-500': '#d946ef',
+                  'from-indigo-400': '#818cf8', 'via-purple-500': '#a855f7', 'to-violet-600': '#7c3aed',
+                  'from-amber-400': '#fbbf24', 'via-orange-500': '#f97316', 'to-red-600': '#dc2626',
+                  'from-rose-300': '#fda4af', 'via-pink-400': '#f472b6',
+                  'from-gray-800': '#1f2937', 'via-gray-700': '#374151', 'to-gray-900': '#111827',
+                  'from-purple-300': '#d8b4fe', 'via-violet-400': '#a78bfa', 'to-indigo-500': '#6366f1',
+                  'from-yellow-200': '#fef08a', 'via-amber-300': '#fcd34d', 'to-orange-400': '#fb923c',
+                  'from-cyan-300': '#67e8f9', 'via-blue-400': '#60a5fa',
+                  'from-pink-300': '#f9a8d4', 'via-fuchsia-400': '#e879f9', 'to-purple-500': '#a855f7',
+                  'from-green-400': '#4ade80', 'via-emerald-500': '#10b981', 'to-teal-600': '#0d9488',
+                  'from-gray-500': '#6b7280', 'via-gray-700': '#374151',
+                  'from-pink-400': '#f472b6', 'via-rose-500': '#f43f5e', 'to-red-600': '#dc2626',
+                  'from-green-300': '#86efac', 'via-lime-400': '#a3e635', 'to-emerald-500': '#10b981',
+                  'from-rose-300': '#fda4af', 'via-pink-400': '#f472b6', 'to-fuchsia-500': '#d946ef',
+                  'from-yellow-300': '#fde047', 'via-amber-400': '#fbbf24', 'to-orange-500': '#f97316',
+                  'from-teal-300': '#5eead4', 'via-cyan-400': '#22d3ee', 'to-blue-500': '#3b82f6',
+                  'from-orange-200': '#fed7aa', 'via-amber-300': '#fcd34d', 'to-yellow-400': '#facc15',
+                  'from-red-300': '#fca5a5', 'via-rose-400': '#fb7185', 'to-pink-500': '#ec4899',
+                  'from-purple-400': '#c084fc', 'via-fuchsia-500': '#d946ef', 'to-pink-600': '#db2777',
+                  'from-indigo-300': '#a5b4fc', 'via-blue-400': '#60a5fa', 'to-cyan-500': '#06b6d4',
+                  'from-orange-300': '#fdba74', 'via-amber-400': '#fbbf24', 'to-yellow-500': '#eab308',
+                  'from-violet-300': '#c4b5fd', 'via-purple-400': '#c084fc', 'to-indigo-500': '#6366f1',
+                  'from-slate-700': '#334155', 'via-gray-800': '#1f2937', 'to-black': '#000000',
+                  'from-teal-300': '#5eead4', 'via-cyan-400': '#22d3ee',
+                  'from-amber-200': '#fde68a', 'via-yellow-300': '#fde047',
+                  'from-pink-300': '#f9a8d4', 'via-fuchsia-400': '#e879f9', 'to-purple-500': '#a855f7',
+                  'from-red-400': '#f87171', 'via-rose-500': '#f43f5e',
+                  'from-indigo-400': '#818cf8', 'via-blue-500': '#3b82f6', 'to-violet-600': '#7c3aed',
+                };
+                const parts = article.gradient.split(' ');
+                const c1 = gradientMap[parts[0]] || '#d4af37';
+                const c2 = gradientMap[parts[1]] || '#c9a030';
+                const c3 = parts[2] ? (gradientMap[parts[2]] || c2) : c2;
+                const fallbackGradient = `linear-gradient(135deg, ${c1}, ${c2}, ${c3})`;
+
+                const isFeatured = idx === 0 && activeCategory === 'الكل' && !searchQuery;
+
+                return (
+                  <div
+                    key={article.id}
+                    className={`article-card ${isFeatured ? 'featured-card' : ''}`}
+                    style={{ animationDelay: `${idx * 0.06}s` }}
+                    onClick={() => navigate(`/magazine/${article.id}`)}
+                  >
+                    <div className="card-image-wrapper" style={{ background: fallbackGradient }}>
+                      {article.image && (
+                        <img
+                          src={article.image}
+                          alt={article.title}
+                          className="card-image-bg"
+                          loading="lazy"
+                          onError={(e) => { e.target.style.display = 'none'; }}
+                        />
+                      )}
+                      <div className="card-image-overlay" />
+                      <span className="card-category-badge">{article.category}</span>
+                      <span className="card-emoji">{article.emoji}</span>
+                    </div>
+                    <div className="card-body">
+                      {isFeatured && <span className="featured-label">⭐ مقال مميز</span>}
+                      <div className="card-date">{article.date}</div>
+                      <h3 className="card-title">{article.title}</h3>
+                      <p className="card-desc">{article.description}</p>
+                    </div>
+                    <div className="card-footer">
+                      <span className="read-more">
+                        اقرأي المزيد
+                        <span>←</span>
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </div>
     </>
   );

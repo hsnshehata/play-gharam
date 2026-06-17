@@ -8,8 +8,12 @@ export default function ArticleDetail() {
 
   const article = articles.find((a) => a.id === Number(id));
 
+  // Get related articles (same category, excluding current)
+  const relatedArticles = article
+    ? articles.filter((a) => a.category === article.category && a.id !== article.id).slice(0, 3)
+    : [];
+
   useEffect(() => {
-    // Trigger fade-in after mount
     const timer = setTimeout(() => setVisible(true), 50);
     return () => clearTimeout(timer);
   }, [id]);
@@ -18,16 +22,16 @@ export default function ArticleDetail() {
     return (
       <div
         dir="rtl"
-        className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50 flex flex-col items-center justify-center px-4"
+        className="min-h-screen flex flex-col items-center justify-center px-4"
+        style={{ background: '#faf8f5', fontFamily: "'Cairo', sans-serif" }}
       >
         <div className="text-7xl mb-6">😔</div>
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">المقال غير موجود</h1>
-        <p className="text-gray-500 mb-8 text-lg">
-          المقال اللي بتدوري عليه مش موجود أو اتحذف.
-        </p>
+        <h1 className="text-3xl font-bold mb-4" style={{ color: '#1a1a2e' }}>المقال غير موجود</h1>
+        <p className="text-gray-500 mb-8 text-lg">المقال اللي بتدوري عليه مش موجود أو اتحذف.</p>
         <Link
           to="/magazine"
-          className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 px-6 py-3 text-white font-semibold shadow-lg hover:shadow-xl hover:from-pink-600 hover:to-rose-600 transition-all duration-300"
+          className="inline-flex items-center gap-2 rounded-xl px-8 py-3 text-white font-semibold text-lg transition-all duration-300 hover:shadow-xl"
+          style={{ background: 'linear-gradient(135deg, #1a1a2e, #16213e)' }}
         >
           ← رجوع للمجلة
         </Link>
@@ -37,118 +41,348 @@ export default function ArticleDetail() {
 
   const paragraphs = article.content.split('\n\n').filter(Boolean);
 
+  const gradientMap = {
+    'from-pink-400': '#f472b6', 'via-rose-500': '#f43f5e', 'to-fuchsia-600': '#d946ef',
+    'from-emerald-300': '#6ee7b7', 'via-teal-400': '#2dd4bf', 'to-cyan-500': '#06b6d4',
+    'from-red-400': '#f87171', 'to-pink-600': '#db2777',
+    'from-violet-300': '#c4b5fd', 'via-purple-400': '#c084fc', 'to-fuchsia-500': '#d946ef',
+    'from-indigo-400': '#818cf8', 'via-purple-500': '#a855f7', 'to-violet-600': '#7c3aed',
+    'from-amber-400': '#fbbf24', 'via-orange-500': '#f97316', 'to-red-600': '#dc2626',
+    'from-rose-300': '#fda4af', 'via-pink-400': '#f472b6',
+    'from-gray-800': '#1f2937', 'via-gray-700': '#374151', 'to-gray-900': '#111827',
+    'from-purple-300': '#d8b4fe', 'via-violet-400': '#a78bfa', 'to-indigo-500': '#6366f1',
+    'from-yellow-200': '#fef08a', 'via-amber-300': '#fcd34d', 'to-orange-400': '#fb923c',
+    'from-cyan-300': '#67e8f9', 'via-blue-400': '#60a5fa',
+    'from-pink-300': '#f9a8d4', 'via-fuchsia-400': '#e879f9', 'to-purple-500': '#a855f7',
+    'from-green-400': '#4ade80', 'via-emerald-500': '#10b981', 'to-teal-600': '#0d9488',
+    'from-gray-500': '#6b7280', 'via-gray-700': '#374151',
+    'from-green-300': '#86efac', 'via-lime-400': '#a3e635', 'to-emerald-500': '#10b981',
+    'from-yellow-300': '#fde047', 'via-amber-400': '#fbbf24', 'to-orange-500': '#f97316',
+    'from-teal-300': '#5eead4', 'via-cyan-400': '#22d3ee', 'to-blue-500': '#3b82f6',
+    'from-orange-200': '#fed7aa', 'via-amber-300': '#fcd34d', 'to-yellow-400': '#facc15',
+    'from-red-300': '#fca5a5', 'via-rose-400': '#fb7185', 'to-pink-500': '#ec4899',
+    'from-purple-400': '#c084fc', 'via-fuchsia-500': '#d946ef', 'to-pink-600': '#db2777',
+    'from-indigo-300': '#a5b4fc', 'via-blue-400': '#60a5fa', 'to-cyan-500': '#06b6d4',
+    'from-orange-300': '#fdba74', 'via-amber-400': '#fbbf24', 'to-yellow-500': '#eab308',
+    'from-violet-300': '#c4b5fd', 'via-purple-400': '#c084fc', 'to-indigo-500': '#6366f1',
+    'from-slate-700': '#334155', 'via-gray-800': '#1f2937', 'to-black': '#000000',
+    'from-teal-300': '#5eead4', 'via-cyan-400': '#22d3ee',
+    'from-amber-200': '#fde68a', 'via-yellow-300': '#fde047',
+    'from-red-400': '#f87171', 'via-rose-500': '#f43f5e',
+    'from-indigo-400': '#818cf8', 'via-blue-500': '#3b82f6', 'to-violet-600': '#7c3aed',
+  };
+  const parts = article.gradient.split(' ');
+  const c1 = gradientMap[parts[0]] || '#d4af37';
+  const c2 = gradientMap[parts[1]] || '#c9a030';
+  const c3 = parts[2] ? (gradientMap[parts[2]] || c2) : c2;
+  const headerGradient = `linear-gradient(135deg, ${c1}, ${c2}, ${c3})`;
+
   return (
     <div
       dir="rtl"
-      className={`min-h-screen bg-gradient-to-b from-gray-50 to-pink-50 transition-all duration-700 ease-out ${
-        visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
-      }`}
+      className={`min-h-screen transition-all duration-700 ease-out ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
+      style={{ background: '#faf8f5', fontFamily: "'Cairo', sans-serif" }}
     >
-      {/* Gradient header */}
-      <div
-        className={`relative bg-gradient-to-r ${article.gradient} px-6 pt-16 pb-24 text-white overflow-hidden`}
-      >
-        {/* Decorative circles */}
-        <div className="absolute -top-10 -left-10 w-40 h-40 rounded-full bg-white/10 blur-xl" />
-        <div className="absolute -bottom-10 -right-10 w-48 h-48 rounded-full bg-white/10 blur-xl" />
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800&display=swap');
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'Cairo', sans-serif; }
 
-        <div className="relative z-10 max-w-3xl mx-auto">
-          <Link
-            to="/magazine"
-            className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-6 text-sm font-medium transition-colors"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
+        .article-header {
+          position: relative;
+          padding: 80px 20px 60px;
+          text-align: center;
+          overflow: hidden;
+        }
+        .article-header-bg {
+          position: absolute;
+          inset: 0;
+          ${article.image ? `
+          background-image: url(${article.image});
+          background-size: cover;
+          background-position: center;
+          ` : `background: ${headerGradient};`}
+        }
+        .article-header-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(180deg, rgba(26,26,46,0.7) 0%, rgba(26,26,46,0.85) 100%);
+        }
+        .article-header-content {
+          position: relative;
+          z-index: 1;
+          max-width: 800px;
+          margin: 0 auto;
+        }
+        .article-category-badge {
+          display: inline-block;
+          background: rgba(212, 175, 55, 0.9);
+          color: #1a1a2e;
+          padding: 6px 18px;
+          border-radius: 8px;
+          font-size: 0.8rem;
+          font-weight: 700;
+          letter-spacing: 0.5px;
+          margin-bottom: 20px;
+        }
+        .article-title {
+          font-family: 'Playfair Display', serif;
+          font-size: clamp(1.6rem, 5vw, 2.8rem);
+          font-weight: 800;
+          color: #fff;
+          margin: 0 0 16px;
+          line-height: 1.3;
+        }
+        .article-meta {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 20px;
+          color: rgba(255,255,255,0.6);
+          font-size: 0.88rem;
+        }
+        .article-meta span {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+
+        .article-body {
+          max-width: 720px;
+          margin: 0 auto;
+          padding: 0 20px;
+        }
+        .article-content-card {
+          background: #fff;
+          border-radius: 20px;
+          padding: 40px;
+          margin-top: -30px;
+          position: relative;
+          z-index: 2;
+          box-shadow: 0 8px 40px rgba(0,0,0,0.08);
+          border: 1px solid #f0ece5;
+        }
+        .article-paragraph {
+          font-size: 1.12rem;
+          color: #3a3a3a;
+          line-height: 2;
+          margin: 0 0 24px;
+          text-align: justify;
+        }
+        .article-paragraph:last-child {
+          margin-bottom: 0;
+        }
+
+        .share-section {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          padding: 32px 0;
+          border-top: 1px solid #e8e4de;
+          margin-top: 32px;
+        }
+        .share-label {
+          font-size: 0.85rem;
+          color: #999;
+          font-weight: 600;
+        }
+        .share-btn {
+          width: 42px;
+          height: 42px;
+          border-radius: 10px;
+          border: 1px solid #e8e4de;
+          background: #fff;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.1rem;
+          transition: all 0.2s ease;
+        }
+        .share-btn:hover {
+          background: #1a1a2e;
+          border-color: #1a1a2e;
+          transform: translateY(-2px);
+        }
+
+        .related-section {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 60px 20px;
+        }
+        .related-label {
+          font-size: 0.75rem;
+          font-weight: 700;
+          color: #d4af37;
+          text-transform: uppercase;
+          letter-spacing: 3px;
+          margin-bottom: 8px;
+        }
+        .related-title {
+          font-family: 'Playfair Display', serif;
+          font-size: clamp(1.3rem, 3vw, 1.8rem);
+          font-weight: 700;
+          color: #1a1a2e;
+          margin: 0 0 32px;
+        }
+        .related-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+          gap: 24px;
+        }
+        .related-card {
+          background: #fff;
+          border-radius: 16px;
+          overflow: hidden;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+          transition: all 0.3s ease;
+          cursor: pointer;
+          border: 1px solid #f0ece5;
+          text-decoration: none;
+        }
+        .related-card:hover {
+          transform: translateY(-6px);
+          box-shadow: 0 12px 36px rgba(0,0,0,0.12);
+        }
+        .related-card-image {
+          height: 160px;
+          background-size: cover;
+          background-position: center;
+          position: relative;
+        }
+        .related-card-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.5) 100%);
+        }
+        .related-card-body {
+          padding: 20px;
+        }
+        .related-card-title {
+          font-size: 1rem;
+          font-weight: 700;
+          color: #1a1a2e;
+          margin: 0 0 8px;
+          line-height: 1.5;
+        }
+        .related-card-desc {
+          font-size: 0.82rem;
+          color: #999;
+          line-height: 1.6;
+          margin: 0;
+        }
+
+        .back-nav {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-bottom: 24px;
+          color: rgba(255,255,255,0.7);
+          font-size: 0.88rem;
+          text-decoration: none;
+          transition: color 0.2s;
+        }
+        .back-nav:hover {
+          color: #d4af37;
+        }
+
+        @media (max-width: 768px) {
+          .article-content-card {
+            padding: 28px 20px;
+          }
+          .article-paragraph {
+            font-size: 1.05rem;
+          }
+          .related-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
+
+      {/* ===== ARTICLE HEADER ===== */}
+      <header className="article-header">
+        <div className="article-header-bg" />
+        <div className="article-header-overlay" />
+        <div className="article-header-content">
+          <Link to="/magazine" className="back-nav">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
             رجوع للمجلة
           </Link>
-
-          <span className="inline-block rounded-full bg-white/20 backdrop-blur-sm px-4 py-1.5 text-sm font-semibold mb-4">
-            {article.emoji} {article.category}
-          </span>
-
-          <h1 className="text-3xl md:text-4xl font-bold leading-tight mb-3">
-            {article.title}
-          </h1>
-
-          <p className="text-white/80 text-sm">{article.date}</p>
+          <span className="article-category-badge">{article.emoji} {article.category}</span>
+          <h1 className="article-title">{article.title}</h1>
+          <div className="article-meta">
+            <span>📅 {article.date}</span>
+            <span>📖 {paragraphs.length} دقائق قراءة</span>
+          </div>
         </div>
-      </div>
+      </header>
 
-      {/* Article content */}
-      <div className="max-w-3xl mx-auto px-6 -mt-12 relative z-20">
-        <div className="bg-white rounded-2xl shadow-xl p-6 md:p-10 mb-8">
-          {/* Article image */}
-          {article.image && (
-            <div className="mb-8 -mx-6 md:-mx-10 -mt-6 md:-mt-10 overflow-hidden rounded-t-2xl">
-              <img
-                src={article.image}
-                alt={article.title}
-                className="w-full max-h-96 object-cover rounded-xl"
-              />
-            </div>
-          )}
+      {/* ===== ARTICLE CONTENT ===== */}
+      <div className="article-body">
+        <div className="article-content-card">
           {paragraphs.map((para, idx) => (
-            <p
-              key={idx}
-              className="text-gray-700 leading-relaxed text-lg mb-6 last:mb-0"
-            >
-              {para}
-            </p>
+            <p key={idx} className="article-paragraph">{para}</p>
           ))}
-        </div>
 
-        {/* Back button */}
-        <div className="text-center pb-8">
-          <Link
-            to="/magazine"
-            className="inline-flex items-center gap-2 rounded-xl border-2 border-pink-200 px-6 py-3 text-pink-600 font-semibold hover:bg-pink-50 hover:border-pink-300 transition-all duration-300"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-            </svg>
-            مقالات أخرى
-          </Link>
+          {/* Share Section */}
+          <div className="share-section">
+            <span className="share-label">شاركِي المقال</span>
+            <button className="share-btn" onClick={() => navigator.clipboard?.writeText(window.location.href)} title="نسخ الرابط">🔗</button>
+            <a className="share-btn" href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(article.title)}&url=${encodeURIComponent(window.location.href)}`} target="_blank" rel="noopener noreferrer" title="مشاركة على X">𝕏</a>
+            <a className="share-btn" href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`} target="_blank" rel="noopener noreferrer" title="مشاركة على فيسبوك">📘</a>
+            <a className="share-btn" href={`https://wa.me/?text=${encodeURIComponent(article.title + ' ' + window.location.href)}`} target="_blank" rel="noopener noreferrer" title="مشاركة على واتساب">💬</a>
+          </div>
         </div>
       </div>
 
-      {/* Floating booking button */}
-      <a
-        href="https://gharam.art"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="fixed bottom-6 left-6 z-50 flex items-center gap-2 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 px-6 py-3.5 text-white font-bold shadow-xl hover:shadow-2xl hover:from-pink-600 hover:to-rose-600 transition-all duration-300 animate-bounce"
-      >
-        💖 للحجز
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-4 w-4"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
+      {/* ===== RELATED ARTICLES ===== */}
+      {relatedArticles.length > 0 && (
+        <div className="related-section">
+          <div className="related-label">مقالات ذات صلة</div>
+          <h2 className="related-title">مقالات قد تعجبك</h2>
+          <div className="related-grid">
+            {relatedArticles.map((rel) => {
+              const rParts = rel.gradient.split(' ');
+              const rc1 = gradientMap[rParts[0]] || '#d4af37';
+              const rc2 = gradientMap[rParts[1]] || '#c9a030';
+              const rc3 = rParts[2] ? (gradientMap[rParts[2]] || rc2) : rc2;
+              const rGrad = `linear-gradient(135deg, ${rc1}, ${rc2}, ${rc3})`;
+
+              return (
+                <Link key={rel.id} to={`/magazine/${rel.id}`} className="related-card">
+                  <div
+                    className="related-card-image"
+                    style={{
+                      backgroundImage: rel.image ? `url(${rel.image})` : 'none',
+                      background: rel.image ? undefined : rGrad,
+                    }}
+                  >
+                    <div className="related-card-overlay" />
+                  </div>
+                  <div className="related-card-body">
+                    <h3 className="related-card-title">{rel.title}</h3>
+                    <p className="related-card-desc">{rel.description}</p>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ===== BACK TO MAGAZINE ===== */}
+      <div className="text-center pb-12">
+        <Link
+          to="/magazine"
+          className="inline-flex items-center gap-2 rounded-xl px-8 py-3 text-white font-semibold transition-all duration-300 hover:shadow-xl"
+          style={{ background: 'linear-gradient(135deg, #1a1a2e, #16213e)' }}
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-          />
-        </svg>
-      </a>
+          ← تصفحي المزيد من المقالات
+        </Link>
+      </div>
     </div>
   );
 }

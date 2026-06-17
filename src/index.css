@@ -3,26 +3,49 @@
 @tailwind utilities;
 
 @layer base {
-  * { @apply transition-colors duration-200; }
-  body { font-family: 'Noto Naskh Arabic', sans-serif; }
+  * {
+    @apply transition-colors duration-200;
+  }
+  body {
+    font-family: 'Cairo', sans-serif;
+    margin: 0;
+    background: #faf8f5;
+  }
 }
 
 @layer components {
-  .btn-primary { @apply bg-gradient-to-r from-pink-500 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:from-pink-600 hover:to-pink-700 active:scale-95 transform; }
-  .btn-gold { @apply bg-gradient-to-r from-amber-400 to-yellow-500 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:from-amber-500 hover:to-yellow-600 active:scale-95 transform; }
-  .card { @apply bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-pink-100 p-6 hover:shadow-xl; }
-  .game-card { @apply relative overflow-hidden rounded-2xl shadow-lg cursor-pointer; }
-  .glass { @apply bg-white/70 backdrop-blur-md rounded-2xl border border-white/50 shadow-lg; }
+  .btn-primary {
+    @apply px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl active:scale-95 transform;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    color: #d4af37;
+  }
+  .card {
+    @apply bg-white rounded-2xl shadow-lg border p-6 hover:shadow-xl;
+    border-color: #f0ece5;
+  }
+  .glass {
+    @apply bg-white/70 backdrop-blur-md rounded-2xl border shadow-lg;
+    border-color: rgba(255,255,255,0.5);
+  }
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
 }
-.animate-float { animation: float 3s ease-in-out infinite; }
+::-webkit-scrollbar-track {
+  background: #faf8f5;
+}
+::-webkit-scrollbar-thumb {
+  background: #d4af37;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #c9a030;
+}
 
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(236, 72, 153, 0.3); }
-  50% { box-shadow: 0 0 40px rgba(236, 72, 153, 0.6); }
+/* Selection */
+::selection {
+  background: #d4af37;
+  color: #1a1a2e;
 }
-.animate-glow { animation: pulse-glow 2s ease-in-out infinite; }
